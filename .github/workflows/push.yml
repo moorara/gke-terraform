@@ -1,0 +1,26 @@
+name: Main
+on: push
+jobs:
+  terraform:
+    name: Terraform
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Configure Terraform
+        working-directory: ./terraform
+        env:
+          GOOGLE_ACCOUNT_FILE: ${{ secrets.GOOGLE_ACCOUNT_FILE }}
+        run: |
+          echo "$GOOGLE_ACCOUNT_FILE"        >  account.json
+          echo 'project     = "test"'        >  terraform.tfvars
+          echo 'region      = "us-east4"'    >> terraform.tfvars
+          echo 'zone        = "us-east4a"'   >> terraform.tfvars
+          echo 'environment = "test"'        >> terraform.tfvars
+          echo 'domain      = "example.com"' >> terraform.tfvars
+      - name: Validate Terraform
+        working-directory: ./terraform
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: account.json
+        run: |
+          terraform init -backend=false
+          terraform validate
