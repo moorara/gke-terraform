@@ -57,3 +57,21 @@ variable "domain" {
   type        = string
   description = "A full domain name for the deployment."
 }
+
+variable "machine_type" {
+  type        = string
+  description = "The name of a Google Compute Engine machine type."
+  default     = "n1-standard-1"
+}
+
+variable "disk_type" {
+  type        = string
+  description = "Type of the disk attached to each node (pd-standard or pd-ssd)."
+  default     = "pd-standard"
+}
+
+variable "disk_size_gb" {
+  type        = number
+  description = "Size of the disk attached to each node in GB."
+  default     = "32"
+}
