@@ -19,11 +19,6 @@ locals {
     region = var.region
   }
 
-  # A map of zone label for zonal resources
-  zone_label = {
-    zone = var.zone
-  }
-
   # A list of common tags for every resource
   common_tags = [
     var.environment,
@@ -35,10 +30,5 @@ locals {
   # A list of region tag for regional resources
   region_tag = [
     var.region
-  ]
-
-  # A list of zone tag for zonal resources
-  zone_tag = [
-    var.zone
   ]
 }
