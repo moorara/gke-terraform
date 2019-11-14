@@ -13,11 +13,6 @@ variable "region" {
   description = "The Google Cloud region to manage resources in."
 }
 
-variable "zone" {
-  type        = string
-  description = "The Google Cloud zone to manage resources in."
-}
-
 # ======================================== Metadata ========================================
 
 variable "environment" {
