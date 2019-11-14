@@ -11,8 +11,8 @@ terraform {
 # https://www.terraform.io/docs/providers/google/getting_started.html
 # https://www.terraform.io/docs/configuration/providers.html#version-provider-versions
 provider "google" {
-  # Equivalent to ">= 2.19.0, < 2.0.0"
-  version     = "~> 2.19"
+  # Equivalent to ">= 2.20.0, < 2.0.0"
+  version     = "~> 2.20"
   credentials = file("account.json")
   project     = var.project
   region      = var.region
