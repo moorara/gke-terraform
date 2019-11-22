@@ -3,7 +3,7 @@ region := $(shell cat terraform.tfvars | grep region | grep -oe '".*"')
 environment := $(shell cat terraform.tfvars | grep environment | grep -oe '".*"')
 domain := $(shell cat terraform.tfvars | grep domain | grep -oe '".*"')
 
-uuid := $(shell uuidgen)
+uuid := $(shell uuidgen | tr [:upper:] [:lower:])
 owner := $(shell whoami)
 branch := $(shell git rev-parse --abbrev-ref HEAD)
 commit := $(shell git rev-parse --short HEAD)
@@ -14,8 +14,8 @@ key_name := gke-$(environment)-$(region)-bastion
 
 .PHONY: clean
 clean:
-	@ rm -f *.pub *.pem $(key_name) && \
-	  rm -rf .terraform terraform.tfstate terraform.tfstate.backup
+	@ rm -rf .terraform terraform.tfstate terraform.tfstate.backup && \
+	  rm -f *.pub *.pem $(key_name)
 
 .PHONY: keys
 keys:
@@ -51,6 +51,15 @@ plan:
 apply:
 	@ GOOGLE_APPLICATION_CREDENTIALS="$(account_file)" \
 	  terraform apply \
+	    -var uuid=$(uuid) \
+	    -var owner=$(owner) \
+	    -var git_branch=$(branch) \
+	    -var git_commit=$(commit)
+
+.PHONY: refresh
+refresh:
+	@ GOOGLE_APPLICATION_CREDENTIALS="$(account_file)" \
+	  terraform refresh \
 	    -var uuid=$(uuid) \
 	    -var owner=$(owner) \
 	    -var git_branch=$(branch) \
