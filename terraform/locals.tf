@@ -9,7 +9,6 @@ locals {
     environment = var.environment
     uuid        = var.uuid
     owner       = var.owner
-    git_url     = var.git_url
     git_branch  = var.git_branch
     git_commit  = var.git_commit
   }
@@ -22,9 +21,7 @@ locals {
   # A list of common tags for every resource
   common_tags = [
     var.environment,
-    var.uuid,
     var.owner,
-    var.git_commit,
   ]
 
   # A list of region tag for regional resources

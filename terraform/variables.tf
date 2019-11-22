@@ -17,7 +17,7 @@ variable "region" {
 
 variable "environment" {
   type        = string
-  description = "The Environment name for deployment."
+  description = "The name of environment for deployment."
 }
 
 variable "uuid" {
@@ -28,12 +28,6 @@ variable "uuid" {
 variable "owner" {
   type        = string
   description = "An identifiable name, username, or ID that owns the deployment."
-}
-
-variable "git_url" {
-  type        = string
-  description = "The URL for the git repository."
-  default     = "https://github.com/moorara/gke-terraform"
 }
 
 variable "git_branch" {
