@@ -103,7 +103,7 @@ resource "null_resource" "configure_kubectl" {
   provisioner "local-exec" {
     command = <<EOF
       gcloud container clusters get-credentials ${local.name} --region ${var.region} --project ${var.project}
-      sed -i "s/gke_${var.project}_${var.region}_${local.name}/${local.name}/g" ~/.kube/config
+      sed -i '' "s/gke_${var.project}_${var.region}_${local.name}/${local.name}/g" ~/.kube/config
     EOF
   }
 }
