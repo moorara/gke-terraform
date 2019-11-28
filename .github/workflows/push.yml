@@ -14,9 +14,7 @@ jobs:
           echo "$GOOGLE_ACCOUNT_FILE"        >  account.json
           echo 'project     = "test"'        >  terraform.tfvars
           echo 'region      = "us-east4"'    >> terraform.tfvars
-          echo 'zone        = "us-east4a"'   >> terraform.tfvars
           echo 'environment = "test"'        >> terraform.tfvars
-          echo 'domain      = "example.com"' >> terraform.tfvars
       - name: Validate Terraform
         working-directory: ./terraform
         env:

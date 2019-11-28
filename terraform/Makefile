@@ -1,7 +1,7 @@
 account_file := account.json
+project := $(shell cat terraform.tfvars | grep project | grep -oe '".*"')
 region := $(shell cat terraform.tfvars | grep region | grep -oe '".*"')
 environment := $(shell cat terraform.tfvars | grep environment | grep -oe '".*"')
-domain := $(shell cat terraform.tfvars | grep domain | grep -oe '".*"')
 
 uuid := $(shell uuidgen | tr [:upper:] [:lower:])
 owner := $(shell whoami)
@@ -27,7 +27,7 @@ keys:
 init:
 	@ GOOGLE_APPLICATION_CREDENTIALS="$(account_file)" \
 	  terraform init \
-	    -backend-config="bucket=terraform-$(domain)" \
+	    -backend-config="bucket=terraform-$(project)" \
 	    -backend-config="prefix=$(environment)/state" \
 
 .PHONY: validate
