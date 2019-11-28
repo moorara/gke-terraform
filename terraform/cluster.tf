@@ -22,6 +22,20 @@ resource "google_container_cluster" "main" {
     }
   }
 
+  # https://www.terraform.io/docs/providers/google/r/container_cluster.html#network_policy_config
+  addons_config {
+    network_policy_config {
+      disabled = false
+    }
+  }
+
+  # https://kubernetes.io/docs/concepts/services-networking/network-policies
+  # https://www.terraform.io/docs/providers/google/r/container_cluster.html#network_policy
+  network_policy {
+    enabled  = true
+    provider = "CALICO"
+  }
+
   resource_labels = merge(local.common_labels, local.region_label, {
     name = local.name
   })
@@ -29,7 +43,7 @@ resource "google_container_cluster" "main" {
 
 # https://cloud.google.com/kubernetes-engine/docs/concepts/node-pools
 # https://www.terraform.io/docs/providers/google/r/container_node_pool.html
-resource "google_container_node_pool" "main" {
+resource "google_container_node_pool" "primary" {
   name       = local.name
   location   = var.region
   cluster    = google_container_cluster.main.name
@@ -40,15 +54,21 @@ resource "google_container_node_pool" "main" {
     auto_upgrade = true
   }
 
-  # https://www.terraform.io/docs/providers/google/r/container_node_pool.html#node_count
-  node_count = 1
+  # https://www.terraform.io/docs/providers/google/r/container_node_pool.html#initial_node_count
+  initial_node_count = var.node_pool_config.primary.min_node_count
+
+  # https://www.terraform.io/docs/providers/google/r/container_node_pool.html#autoscaling
+  autoscaling { 
+    min_node_count = var.node_pool_config.primary.min_node_count
+    max_node_count = var.node_pool_config.primary.max_node_count
+  }
 
   # https://www.terraform.io/docs/providers/google/r/container_cluster.html#node_config
   node_config {
-    # preemptible  = true
-    machine_type = var.machine_type
-    disk_type    = var.disk_type
-    disk_size_gb = var.disk_size_gb
+    preemptible  = false
+    machine_type = var.node_pool_config.primary.machine_type
+    disk_type    = var.node_pool_config.primary.disk_type
+    disk_size_gb = var.node_pool_config.primary.disk_size_gb
 
     # https://www.terraform.io/docs/providers/google/r/container_cluster.html#metadata
     metadata = {
@@ -75,18 +95,15 @@ resource "google_container_node_pool" "main" {
 # https://www.terraform.io/docs/provisioners/index.html
 # https://www.terraform.io/docs/provisioners/local-exec.html
 resource "null_resource" "configure_kubectl" {
-  depends_on = [ google_container_cluster.main ]
+  depends_on = [
+    google_container_cluster.main,
+    google_container_node_pool.primary,
+  ]
 
   provisioner "local-exec" {
     command = <<EOF
-      kubectl config set clusters.${local.name}-cluster.server ${google_container_cluster.main.endpoint}
-      kubectl config set clusters.${local.name}-cluster.certificate-authority-data ${google_container_cluster.main.master_auth.0.cluster_ca_certificate}
-      kubectl config set users.${local.name}-user.client-certificate-data ${google_container_cluster.main.master_auth.0.client_certificate}
-      kubectl config set users.${local.name}-user.client-key-data ${google_container_cluster.main.master_auth.0.client_key}
-      kubectl config set contexts.${local.name}.cluster ${local.name}-cluster
-      kubectl config set contexts.${local.name}.namespace default
-      kubectl config set contexts.${local.name}.user ${local.name}-user
-      kubectl config use-context ${local.name}
+      gcloud container clusters get-credentials ${local.name} --region ${var.region} --project ${var.project}
+      sed -i '' "s/gke_${var.project}_${var.region}_${local.name}/${local.name}/g" ~/.kube/config
     EOF
   }
 }
@@ -97,10 +114,10 @@ resource "null_resource" "configure_kubectl" {
 # https://www.terraform.io/docs/provisioners/local-exec.html
 resource "null_resource" "cleanup_kubectl" {
   provisioner "local-exec" {
-    when    = "destroy"
+    when    = destroy
     command = <<EOF
-      kubectl config unset clusters.${local.name}-cluster
-      kubectl config unset users.${local.name}-user
+      kubectl config unset clusters.${local.name}
+      kubectl config unset users.${local.name}
       kubectl config unset contexts.${local.name}
     EOF
   }

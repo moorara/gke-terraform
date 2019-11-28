@@ -1,8 +1,7 @@
 # https://www.terraform.io/docs/configuration/locals.html
 
 locals {
-  name      = format("gke-%s", var.environment)
-  subdomain = format("k8s.%s.%s", var.environment, var.domain)
+  name = format("gke-%s", var.environment)
 
   # A map of common labels for every resource
   common_labels = {

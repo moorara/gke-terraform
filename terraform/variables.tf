@@ -42,25 +42,24 @@ variable "git_commit" {
 
 # ======================================== Configurations ========================================
 
-variable "domain" {
-  type        = string
-  description = "A full domain name for the deployment."
-}
+variable "node_pool_config" {
+  description = ""
 
-variable "machine_type" {
-  type        = string
-  description = "The name of a Google Compute Engine machine type."
-  default     = "n1-standard-1"
-}
+  type = map(object({
+    machine_type   = string  // The name of a Google Compute Engine machine type.
+    disk_type      = string  // Type of the disk attached to each node (pd-standard or pd-ssd).
+    disk_size_gb   = number  // Size of the disk attached to each node in GB.
+    min_node_count = number  // The minimum number of nodes in the node pool.
+    max_node_count = number  // The maximum number of nodes in the node pool.
+  }))
 
-variable "disk_type" {
-  type        = string
-  description = "Type of the disk attached to each node (pd-standard or pd-ssd)."
-  default     = "pd-standard"
-}
-
-variable "disk_size_gb" {
-  type        = number
-  description = "Size of the disk attached to each node in GB."
-  default     = "32"
+  default = {
+    primary = {
+      machine_type   = "n1-standard-1"
+      disk_type      = "pd-standard"
+      disk_size_gb   = 32
+      min_node_count = 1
+      max_node_count = 3
+    }
+  }
 }
