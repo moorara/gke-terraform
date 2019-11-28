@@ -11,13 +11,29 @@ You need to have the following tools installed:
 
 ## Deployment
 
-### 1. Prerequisites
+### Prerequisites
 
-You need to have the following Google Cloud resources:
+You need to have the following Google Cloud resources ready:
 
-  - A **Storage Bucket** for Terraform backend state named as `terraform-<domain_name>`
+  - A **Storage Bucket** for Terraform backend state named as `terraform-<project-id>`
+
+### Preparation
+
+Inside `terraform` directory, you need to create a file named `terraform.tfvars` with the following variables set.
+
+```
+project     = <project-id>
+region      = <google-cloud-region>
+environment = <environment-name>
+```
+
+### Deployment
+
+First run `make init plan` and once everything is green, you can run `make apply` to deploy the cluster.
 
 ## Tear Down
+
+For tearing down the cluster, run `make destroy`.
 
 ## TO-DO
 
