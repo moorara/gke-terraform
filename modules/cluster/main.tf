@@ -1,10 +1,22 @@
+# https://www.terraform.io/docs/configuration/terraform.html
+terraform {
+  # Re-usable modules should constrain only the minimum allowed version.
+  required_version = ">= 0.12"
+}
+
 # https://cloud.google.com/kubernetes-engine
 # https://www.terraform.io/docs/providers/google/r/container_cluster.html
 resource "google_container_cluster" "main" {
-  name = local.name
+  provider = google-beta
+
+  name    = var.name
+  project = var.project
 
   # https://www.terraform.io/docs/providers/google/r/container_cluster.html#location
   location = var.region
+
+  network    = var.network
+  subnetwork = var.subnetwork
 
   # We cannot create a cluster with no node pool defined, but we want to only use  separately managed node pools.
   # So we create the smallest possible default node pool and immediately delete it.
@@ -24,8 +36,29 @@ resource "google_container_cluster" "main" {
 
   # https://www.terraform.io/docs/providers/google/r/container_cluster.html#network_policy_config
   addons_config {
+    # https://www.terraform.io/docs/providers/google/r/container_cluster.html#network_policy_config
     network_policy_config {
       disabled = false
+    }
+
+    # https://www.terraform.io/docs/providers/google/r/container_cluster.html#http_load_balancing
+    http_load_balancing {
+      disabled = false
+    }
+
+    # https://www.terraform.io/docs/providers/google/r/container_cluster.html#horizontal_pod_autoscaling
+    horizontal_pod_autoscaling {
+      disabled = false
+    }
+
+    # https://www.terraform.io/docs/providers/google/r/container_cluster.html#istio_config
+    istio_config {
+      disabled = true
+    }
+
+    # https://www.terraform.io/docs/providers/google/r/container_cluster.html#cloudrun_config
+    cloudrun_config {
+      disabled = true
     }
   }
 
@@ -36,15 +69,15 @@ resource "google_container_cluster" "main" {
     provider = "CALICO"
   }
 
-  resource_labels = merge(local.common_labels, local.region_label, {
-    name = local.name
+  resource_labels = merge(var.common_labels, var.region_label, {
+    name = var.name
   })
 }
 
 # https://cloud.google.com/kubernetes-engine/docs/concepts/node-pools
 # https://www.terraform.io/docs/providers/google/r/container_node_pool.html
 resource "google_container_node_pool" "primary" {
-  name       = local.name
+  name       = var.name
   location   = var.region
   cluster    = google_container_cluster.main.name
 
@@ -55,7 +88,7 @@ resource "google_container_node_pool" "primary" {
   }
 
   # https://www.terraform.io/docs/providers/google/r/container_node_pool.html#initial_node_count
-  initial_node_count = var.node_pool_config.primary.min_node_count
+  initial_node_count = 1
 
   # https://www.terraform.io/docs/providers/google/r/container_node_pool.html#autoscaling
   autoscaling { 
@@ -70,6 +103,8 @@ resource "google_container_node_pool" "primary" {
     disk_type    = var.node_pool_config.primary.disk_type
     disk_size_gb = var.node_pool_config.primary.disk_size_gb
 
+    service_account = var.service_account
+
     # https://www.terraform.io/docs/providers/google/r/container_cluster.html#metadata
     metadata = {
       disable-legacy-endpoints = "true"
@@ -82,43 +117,21 @@ resource "google_container_node_pool" "primary" {
       "https://www.googleapis.com/auth/devstorage.read_only",
     ]
 
-    labels = merge(local.common_labels, local.region_label, {
-      name = local.name
+    labels = merge(var.common_labels, var.region_label, {
+      name = var.name
     })
 
-    tags = concat(local.common_tags, local.region_tag)
+    # If the cluster is private, the "private" tag needs to be added here
+    tags = concat(var.common_tags, var.region_tag)
   }
-}
 
-# Configure kubectl
-# https://www.terraform.io/docs/provisioners/null_resource.html
-# https://www.terraform.io/docs/provisioners/index.html
-# https://www.terraform.io/docs/provisioners/local-exec.html
-resource "null_resource" "configure_kubectl" {
-  depends_on = [
-    google_container_cluster.main,
-    google_container_node_pool.primary,
-  ]
-
-  provisioner "local-exec" {
-    command = <<EOF
-      gcloud container clusters get-credentials ${local.name} --region ${var.region} --project ${var.project}
-      sed -i '' "s/gke_${var.project}_${var.region}_${local.name}/${local.name}/g" ~/.kube/config
-    EOF
+  lifecycle {
+    ignore_changes = [ initial_node_count ]
   }
-}
 
-# Clean up kubectl configurations
-# https://www.terraform.io/docs/provisioners/null_resource.html
-# https://www.terraform.io/docs/provisioners/index.html#destroy-time-provisioners
-# https://www.terraform.io/docs/provisioners/local-exec.html
-resource "null_resource" "cleanup_kubectl" {
-  provisioner "local-exec" {
-    when    = destroy
-    command = <<EOF
-      kubectl config unset clusters.${local.name}
-      kubectl config unset users.${local.name}
-      kubectl config unset contexts.${local.name}
-    EOF
+  timeouts {
+    create = "20m"
+    update = "20m"
+    delete = "20m"
   }
 }
