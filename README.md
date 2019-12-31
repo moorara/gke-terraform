@@ -2,6 +2,11 @@
 
 # gke-terraform
 
+## TO-DO
+
+  - [ ] Use a real domain name and storage bucket
+  - [ ] Making the cluster private and accessing the cluster only through a bastion host
+
 ## Prerequisites
 
 You need to have the following tools installed:
@@ -34,10 +39,6 @@ First run `make init plan` and once everything is green, you can run `make apply
 ## Tear Down
 
 For tearing down the cluster, run `make destroy`.
-
-## TO-DO
-
-  - [ ] Use a real domain name and storage bucket
 
 ## References
 
