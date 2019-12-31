@@ -39,27 +39,3 @@ variable "git_commit" {
   type        = string
   description = "The short or long hash of the git commit."
 }
-
-# ======================================== Configurations ========================================
-
-variable "node_pool_config" {
-  description = ""
-
-  type = map(object({
-    machine_type   = string  // The name of a Google Compute Engine machine type.
-    disk_type      = string  // Type of the disk attached to each node (pd-standard or pd-ssd).
-    disk_size_gb   = number  // Size of the disk attached to each node in GB.
-    min_node_count = number  // The minimum number of nodes in the node pool.
-    max_node_count = number  // The maximum number of nodes in the node pool.
-  }))
-
-  default = {
-    primary = {
-      machine_type   = "n1-standard-1"
-      disk_type      = "pd-standard"
-      disk_size_gb   = 32
-      min_node_count = 1
-      max_node_count = 3
-    }
-  }
-}

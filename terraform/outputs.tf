@@ -6,21 +6,21 @@ output "cluster_name" {
 }
 
 output "cluster_endpoint" {
-  value       = google_container_cluster.main.endpoint
+  value       = module.cluster.endpoint
   description = "The IP address of the Kubernetes cluster master."
 }
 
 output "cluster_certificate_authority" {
-  value       = google_container_cluster.main.master_auth.0.cluster_ca_certificate
+  value       = module.cluster.certificate_authority
   description = "Public certificate authority that is the root of trust for the cluster (base64-encoded)."
 }
 
 output "client_certificate" {
-  value       = google_container_cluster.main.master_auth.0.client_certificate
+  value       = module.cluster.client_certificate
   description = "Public certificate for clients to authenticate to the cluster (base64-encoded)."
 }
 
 output "client_key" {
-  value       = google_container_cluster.main.master_auth.0.client_key
+  value       = module.cluster.client_key
   description = "Private key for clients to authenticate to the cluster (base64-encoded)."
 }
