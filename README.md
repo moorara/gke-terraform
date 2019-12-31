@@ -12,6 +12,7 @@
 You need to have the following tools installed:
 
   - [Terraform](https://www.terraform.io)
+  - [gcloud](https://cloud.google.com/sdk/gcloud)
   - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl)
 
 ## Deployment
