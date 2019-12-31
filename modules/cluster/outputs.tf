@@ -10,7 +10,7 @@ output "endpoint" {
   description = "The IP address of the Kubernetes cluster master."
 }
 
-output "certificate_authority" {
+output "cluster_ca_certificate" {
   value       = google_container_cluster.main.master_auth.0.cluster_ca_certificate
   description = "Public certificate authority that is the root of trust for the cluster (base64-encoded)."
 }

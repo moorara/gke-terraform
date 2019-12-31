@@ -10,8 +10,8 @@ output "cluster_endpoint" {
   description = "The IP address of the Kubernetes cluster master."
 }
 
-output "cluster_certificate_authority" {
-  value       = module.cluster.certificate_authority
+output "cluster_ca_certificate" {
+  value       = module.cluster.cluster_ca_certificate
   description = "Public certificate authority that is the root of trust for the cluster (base64-encoded)."
 }
 
