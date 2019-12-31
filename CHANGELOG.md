@@ -1,5 +1,14 @@
 # Change Log
 
+## [v0.2.0](https://github.com/moorara/gke-terraform/tree/v0.2.0) (2019-12-31)
+[Full Changelog](https://github.com/moorara/gke-terraform/compare/v0.1.0...v0.2.0)
+
+**Merged pull requests:**
+
+- Next iteration [\#10](https://github.com/moorara/gke-terraform/pull/10) ([moorara](https://github.com/moorara))
+- Update Terraform provider google to v3 [\#9](https://github.com/moorara/gke-terraform/pull/9) ([renovate[bot]](https://github.com/apps/renovate))
+- Configure Renovate [\#8](https://github.com/moorara/gke-terraform/pull/8) ([renovate[bot]](https://github.com/apps/renovate))
+
 ## [v0.1.0](https://github.com/moorara/gke-terraform/tree/v0.1.0) (2019-11-28)
 **Merged pull requests:**
 
