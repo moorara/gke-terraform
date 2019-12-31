@@ -23,6 +23,7 @@ variable "flow_log_sampling" {
 }
 
 # https://en.wikipedia.org/wiki/Classful_network
+# https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing
 variable "subnetwork_cidrs" {
   type        = map(string)
   description = "Subnetwork CIDR for each Google Cloud region."
