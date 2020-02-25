@@ -17,8 +17,8 @@ terraform {
 # https://www.terraform.io/docs/configuration/providers.html#provider-versions
 # https://www.terraform.io/docs/configuration/terraform.html
 provider "google" {
-  # Equivalent to ">= 3.3.0, < 4.0.0"
-  version     = "~> 3.3"
+  # Equivalent to ">= 3.9.0, < 4.0.0"
+  version     = "~> 3.9"
   credentials = file("account.json")
   project     = var.project
   region      = var.region
@@ -30,8 +30,8 @@ provider "google" {
 # https://www.terraform.io/docs/configuration/providers.html#provider-versions
 # https://www.terraform.io/docs/configuration/terraform.html
 provider "google-beta" {
-  # Equivalent to ">= 3.3.0, < 4.0.0"
-  version     = "~> 3.3"
+  # Equivalent to ">= 3.9.0, < 4.0.0"
+  version     = "~> 3.9"
   credentials = file("account.json")
   project     = var.project
   region      = var.region
